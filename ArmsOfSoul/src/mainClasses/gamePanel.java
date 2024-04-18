@@ -11,17 +11,26 @@ import javax.swing.JPanel;
 import inputs.KeyboardInputs;
 import inputs.MouseInputs;
 
+import static utils.Constants.PlayerConstants.*;
+import static utils.Constants.Directions.*;
+
 public class gamePanel extends JPanel {
 	
 	private MouseInputs mouseInputs;
 	private float xDelta = 100, yDelta = 100;
-	private BufferedImage img, subImg;
+	private BufferedImage img;
+	private BufferedImage[][] animations;
+	private int aniTick, aniIndex, aniSpeed = 15;
+	private int playerAction = IDLE;
+	private int playerDir = -1;
+	private boolean moving = false;
 	
 	public gamePanel() {
 		
 		mouseInputs = new MouseInputs(this);
 		
 		importImg();
+		loadAnimations();
 		
 		setPanelSize();
 		addKeyListener(new KeyboardInputs(this));
@@ -30,14 +39,29 @@ public class gamePanel extends JPanel {
 		
 	}
 	
+	private void loadAnimations() {
+		animations = new BufferedImage[6][5];
+		
+		for (int i = 0; i < animations.length; i++) {
+			for (int j = 0; j < animations[i].length; j++) {
+				animations[i][j] = img.getSubimage(i * 34 , j * 34, 34, 34);
+			}
+		}		
+	}
+
 	private void importImg() {
 		InputStream is = getClass().getResourceAsStream("/Main_Char_Sprite.png");
 		
 		try {
 			img = ImageIO.read(is);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			try {
+				is.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -47,27 +71,66 @@ public class gamePanel extends JPanel {
 		
 	}
 
-	public void changeXDelta(int value) {
-		this.xDelta += value;
-		repaint();
+	public void setDirection(int direction) {
+		this.playerDir = direction;
+		moving = true;
 	}
 	
-	public void changeYDelta(int value) {
-		this.yDelta += value;
-		repaint();
+	public void setMoving(boolean moving) {
+		this.moving = moving;
 	}
 	
-	public void setRectPos(int x, int y) {
-		this.xDelta = x;
-		this.yDelta = y;
+	private void updateAnimationTick() {
+		
+		aniTick++;
+		if (aniTick >= aniSpeed) {
+			aniTick = 0;
+			aniIndex++;
+			if (aniIndex >= 6) {
+				aniIndex = 0;
+			}
+		}
+		
+	}
+	
+	private void setAnimaionTick() {
+		
+		if (moving) {
+			playerAction = RUNNING;
+		} else {
+			playerAction = IDLE;
+		}
+		
+	}
+	
+	private void updatePos() {
+		
+		if (moving) {
+			switch (playerDir) {
+			case LEFT:
+				xDelta -= 5;
+				break;
+			case UP:
+				yDelta -= 5;
+				break;
+			case RIGHT:
+				xDelta += 5;
+				break;
+			case DOWN:
+				yDelta += 5;
+				break;
+			}
+		}
 		
 	}
 	
 	public void paintComponent (Graphics g) {
 		super.paintComponent(g);
 		
-		subImg = img.getSubimage(2 * 34, 3 * 34, 34, 34);
-		g.drawImage(subImg, (int) xDelta, (int) yDelta, 132, 132, null);
+		updateAnimationTick();
+		setAnimaionTick();
+		updatePos();
+		
+		g.drawImage(animations[aniIndex][playerAction], (int) xDelta, (int) yDelta, 132, 132, null);
 	}
-	
 }
