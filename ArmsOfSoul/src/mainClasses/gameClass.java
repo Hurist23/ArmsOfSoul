@@ -2,6 +2,7 @@ package mainClasses;
 
 import java.awt.Graphics;
 
+import Chapters.Handler;
 import entities.Player;
 
 public class gameClass implements Runnable {
@@ -11,16 +12,16 @@ public class gameClass implements Runnable {
 	private Thread gameThread;
 	private final int FPS_SET = 120;
 	private final int UPS_SET = 200;
+	private Player player;
+	private Handler handler;
 	
 	public final static int TILES_DEFAULT_SIZE = 32;
-	public static final float SCALE = 1.5f;
+	public static final float SCALE = 2f;
 	public final static int TILES_IN_WIDTH = 26;
 	public final static int TILES_IN_HEIGHT = 14;
 	public final static int TILES_SIZE = (int) (TILES_DEFAULT_SIZE * SCALE);
 	public final static int GAME_WIDTH = TILES_SIZE * TILES_IN_WIDTH;
 	public final static int GAME_HEIGHT = TILES_SIZE * TILES_IN_HEIGHT;
-	
-	private Player player;
 	
 	public gameClass() {
 		initClasses();
@@ -34,7 +35,8 @@ public class gameClass implements Runnable {
 	}
 	
 	private void initClasses() {
-		player = new Player(200, 200);
+		player = new Player(200, 200, (int) (34 * SCALE), (int) (34 * SCALE));
+		handler = new Handler(this);
 		
 	}
 
@@ -45,9 +47,11 @@ public class gameClass implements Runnable {
 	
 	public void update() {
 		player.update();
+		handler.update();
 	}
 	
 	public void render(Graphics g) {
+		handler.draw(g);
 		player.render(g);
 	}
 

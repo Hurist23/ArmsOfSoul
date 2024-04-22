@@ -18,10 +18,10 @@ public class Player extends Entity{
 	private int playerAction = IDLE;
 	private boolean moving = false, attacking = false;
 	private boolean  left, up, right, down;
-	private float playerSpeed = 3.5f;
+	private float playerSpeed = 1.5f;
 	
-	public Player(float x, float y) {
-		super(x, y);
+	public Player(float x, float y, int width, int height) {
+		super(x, y, width, height);
 		loadAnimations();
 	}
 	
@@ -35,7 +35,7 @@ public class Player extends Entity{
 	
 	public void render(Graphics g) {
 		
-		g.drawImage(animations[aniIndex][playerAction], (int) x, (int) y, 132, 132, null);
+		g.drawImage(animations[aniIndex][playerAction], (int) x, (int) y, 68, 68, null);
 		
 	}
 	
